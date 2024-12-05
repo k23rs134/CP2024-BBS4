@@ -436,6 +436,11 @@ function logout() {
         });
 }
 
+//表示名変更処理
+function changeDisplayName() {
+    showMessage('test');
+}
+
 // 認証フォームのクリア
 function clearAuthForm() {
     $('#loginEmail').val('');
@@ -499,6 +504,8 @@ $(function() {
 
     $('#logoutButton').on('click', logout);
 
+    $('#changeDisplayNameButton').on('click', changeDisplayName);
+
     // 投稿一覧表示順序選択
     $('#sortOrder').on('change', loadPosts);
 
@@ -544,6 +551,7 @@ window.addEventListener('unload', function() {
         <!-- ログイン情報（ログイン時表示） -->
         <div class="user-info logged-in">
             <span>ログイン中：<span id="userEmail"></span></span>
+            <button id="changeDisplayNameButton" class="btn-secondary">表示名の変更</button>
             <button id="logoutButton" class="btn-secondary">ログアウト</button>
         </div>
 
@@ -613,6 +621,27 @@ window.addEventListener('unload', function() {
             <div class="modal-footer">
                 <button onclick="handleDelete()" class="btn-danger">削除</button>
                 <button onclick="closeModal('deleteModal')" class="btn-cancel">キャンセル</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 表示名変更確認モーダルウィンドウ -->
+    <div id="editModal" class="modal">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>投稿を編集</h3>
+                <button class="modal-close" onclick="closeModal('editModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <textarea id="editContent" class="form-control"></textarea>
+                    <small class="character-count" id="editContentCount">0/1000</small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button onclick="handleUpdate()" class="btn-primary">更新</button>
+                <button onclick="closeModal('editModal')" class="btn-cancel">キャンセル</button>
             </div>
         </div>
     </div>
