@@ -348,6 +348,19 @@ function cancelEdit(postId) {
     postElement.find('textarea').val('');
 }
 
+//表示名変更の開始//startDispNameEdit('${post.id}')//startEdit('${post.id}')
+function startDispNameEdit(postId) {
+    showMessage('testdispaaaaa');
+
+    //currentEditId = postId;
+    //const post = $(`#post-${postId}`);
+    //const content = post.find('.post-content').text();
+    
+    //$('#editContent').val(content);
+    //updateCharacterCount('editContent', 'editContentCount', 1000);
+    showModal('changeDispNameModal');
+}
+
 // 投稿の更新
 function updatePost(postId) {
     const contentVal = $(`#edit-${postId}`).val();
@@ -438,8 +451,11 @@ function logout() {
 
 //表示名変更処理
 function changeDisplayName() {
-    showMessage('test');
+    showMessage('testdisp');
+
+    startDispNameEdit('${post.id}');
 }
+
 
 // 認証フォームのクリア
 function clearAuthForm() {
@@ -551,7 +567,7 @@ window.addEventListener('unload', function() {
         <!-- ログイン情報（ログイン時表示） -->
         <div class="user-info logged-in">
             <span>ログイン中：<span id="userEmail"></span></span>
-            <button id="changeDisplayNameButton" class="btn-secondary">表示名の変更</button>
+            <button id="changeDisplayNameButton" class="btn-secondary" >表示名の変更</button>
             <button id="logoutButton" class="btn-secondary">ログアウト</button>
         </div>
 
@@ -626,12 +642,12 @@ window.addEventListener('unload', function() {
     </div>
 
     <!-- 表示名変更確認モーダルウィンドウ -->
-    <div id="editModal" class="modal">
+    <div id="changeDispNameModal" class="modal">
         <div class="modal-overlay"></div>
         <div class="modal-content">
             <div class="modal-header">
-                <h3>投稿を編集</h3>
-                <button class="modal-close" onclick="closeModal('editModal')">&times;</button>
+                <h3>表示名を編集</h3>
+                <button class="modal-close" onclick="closeModal('changeDispNameModal')">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
@@ -640,8 +656,8 @@ window.addEventListener('unload', function() {
                 </div>
             </div>
             <div class="modal-footer">
-                <button onclick="handleUpdate()" class="btn-primary">更新</button>
-                <button onclick="closeModal('editModal')" class="btn-cancel">キャンセル</button>
+                <button onclick="handleUpdate()" class="btn-primary">変更</button>
+                <button onclick="closeModal('changeDispNameModal')" class="btn-cancel">キャンセル</button>
             </div>
         </div>
     </div>
