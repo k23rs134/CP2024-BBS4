@@ -32,10 +32,10 @@ function showMessage(message, type = 'success') {
         </div>
     `);
     
-    // 3秒後にメッセージを消す
+    // 3秒後にメッセージを消す//10
     setTimeout(() => {
         messageArea.empty();
-    }, 3000);
+    }, 10000);
 }
 
 // 認証エラーメッセージの日本語化
@@ -111,7 +111,8 @@ function createPost(author, content) {
 
     // author はログインしているユーザのメールアドレスに変更、userId を追加
     const postData = {
-        author: currentUser.email,
+        //author: currentUser.email,
+        author: currentUser.displayName,
         content: content,
         timestamp: firebase.database.ServerValue.TIMESTAMP,
         userId: currentUser.uid
@@ -315,6 +316,37 @@ function handleDelete() {
         });
 }
 
+// 表示名処理のハンドラ//now
+function updateDisplayName() {
+    const newName = $('#newDisplayName').val().trim();
+
+    if (!newName) {
+        showMessage('表示名を入力してください', 'error');
+        return;
+    }
+    if (newName.length > 20) {
+        showMessage('表示名は20文字以内で入力してください', 'error');
+        return;
+    }
+
+    const user = firebase.auth().currentUser;
+    if (user) {
+        user.updateProfile({
+            displayName: newName
+        })
+        .then(() => {
+            showMessage('表示名を更新しました');
+            $('#userEmail').text(newName);
+            closeModal('changeDispNameModal');
+        })
+        .catch((error) => {
+            showMessage('表示名の更新に失敗しました：' + error.message, 'error');
+        });
+    } else {
+        showMessage('ログインしていません', 'error');//多分いらない.
+    }
+}
+
 // モーダルの外側をクリックした時の処理
 $(document).on('click', '.modal-overlay', function() {
     const modalId = $(this).parent().attr('id');
@@ -346,19 +378,6 @@ function cancelEdit(postId) {
     const postElement = $(`#post-${postId}`);
     postElement.removeClass('editing');
     postElement.find('textarea').val('');
-}
-
-//表示名変更の開始//startDispNameEdit('${post.id}')//startEdit('${post.id}')
-function startDispNameEdit(postId) {
-    showMessage('testdispaaaaa');
-
-    //currentEditId = postId;
-    //const post = $(`#post-${postId}`);
-    //const content = post.find('.post-content').text();
-    
-    //$('#editContent').val(content);
-    //updateCharacterCount('editContent', 'editContentCount', 1000);
-    showModal('changeDispNameModal');
 }
 
 // 投稿の更新
@@ -419,13 +438,19 @@ function login(email, password) {
 }
 
 // 新規登録処理
-function register(email, password) {
+function register(email, password) {//now
     if (!validateAuthInput(email, password, true)) return;
 
     const button = $('#registerButton');
     button.prop('disabled', true);
 
     firebase.auth().createUserWithEmailAndPassword(email, password)
+        .then((userCredential) =>  {//参考:https://qiita.com/shiho97797/items/22cbda84274bfecde98f
+            const user = userCredential.user;
+            return user.updateProfile({
+                displayName: email
+            });
+        })
         .then(() => {
             showMessage('アカウントを作成しました');
             clearAuthForm();
@@ -451,9 +476,9 @@ function logout() {
 
 //表示名変更処理
 function changeDisplayName() {
-    showMessage('testdisp');
-
-    startDispNameEdit('${post.id}');
+    showMessage('表示名を変更します');
+    showModal('changeDispNameModal');
+    //startDispNameEdit('${post.id}');
 }
 
 
@@ -469,7 +494,7 @@ function updateUI(user) {
     if (user) {
         $('.logged-in').show();
         $('.logged-out').hide();
-        $('#userEmail').text(user.email);
+        $('#userEmail').text(user.displayName);//表示名.
     } else {
         $('.logged-in').hide();
         $('.logged-out').show();
@@ -515,12 +540,12 @@ $(function() {
     $('#registerButton').on('click', function() {
         const email = $('#loginEmail').val();
         const password = $('#loginPassword').val();
-        register(email, password);
+        register(currentUser, email, password);
     });
 
     $('#logoutButton').on('click', logout);
 
-    $('#changeDisplayNameButton').on('click', changeDisplayName);
+    $('#changeDisplayNameButton').on('click', changeDisplayName);//ここで
 
     // 投稿一覧表示順序選択
     $('#sortOrder').on('change', loadPosts);
@@ -642,11 +667,13 @@ window.addEventListener('unload', function() {
     </div>
 
     <!-- 表示名変更確認モーダルウィンドウ -->
+    <!--
     <div id="changeDispNameModal" class="modal">
         <div class="modal-overlay"></div>
         <div class="modal-content">
             <div class="modal-header">
                 <h3>表示名を編集</h3>
+                <input type="text" id="newDisplayName" placeholder="新しい表示名を入力">
                 <button class="modal-close" onclick="closeModal('changeDispNameModal')">&times;</button>
             </div>
             <div class="modal-body">
@@ -656,10 +683,27 @@ window.addEventListener('unload', function() {
                 </div>
             </div>
             <div class="modal-footer">
-                <button onclick="handleUpdate()" class="btn-primary">変更</button>
+                <button onclick="updateDisplayName()" class="btn-primary">変更</button>
                 <button onclick="closeModal('changeDispNameModal')" class="btn-cancel">キャンセル</button>
             </div>
         </div>
     </div>
+    -->
+    <div id="changeDispNameModal" class="modal">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>表示名を編集</h3>
+            <button class="modal-close" onclick="closeModal('changeDispNameModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <input type="text" id="newDisplayName" placeholder="新しい表示名を入力">
+        </div>
+        <div class="modal-footer">
+            <button onclick="updateDisplayName()" class="btn-primary">変更</button>
+            <button onclick="closeModal('changeDispNameModal')" class="btn-cancel">キャンセル</button>
+        </div>
+    </div>
+</div>
 </body>
 </html>
