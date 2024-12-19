@@ -80,9 +80,11 @@ function validateContent(content) {
     return true;
 }
 
-// 認証フォームのバリデーション
+//
 function validateAuthInput(email, password, isRegister = false) {
+    console.log(email);
     if (!email || !email.trim()) {
+        console.log(email);
         showMessage('メールアドレスを入力してください', 'error');
         return false;
     }
@@ -273,7 +275,7 @@ function closeModal(modalId) {
     $('body').removeClass('modal-open');
 }
 
-// 更新処理のハンドラ
+// 更新処理のハンドラ//now
 function handleUpdate() {
     if (!currentEditId) return;
     
@@ -447,8 +449,10 @@ function register(email, password) {//now
     firebase.auth().createUserWithEmailAndPassword(email, password)
         .then((userCredential) =>  {//参考:https://qiita.com/shiho97797/items/22cbda84274bfecde98f
             const user = userCredential.user;
+            const s = email.split('@')[0].trim();
+            console.log(s);//参考:https://qiita.com/conkon326/items/ed14a69e860ab4d65d5c//const email = $('#loginEmail').val();
             return user.updateProfile({
-                displayName: email
+                displayName: s,
             });
         })
         .then(() => {
@@ -478,7 +482,6 @@ function logout() {
 function changeDisplayName() {
     showMessage('表示名を変更します');
     showModal('changeDispNameModal');
-    //startDispNameEdit('${post.id}');
 }
 
 
@@ -540,7 +543,8 @@ $(function() {
     $('#registerButton').on('click', function() {
         const email = $('#loginEmail').val();
         const password = $('#loginPassword').val();
-        register(currentUser, email, password);
+        console.log(email);
+        register(email, password);
     });
 
     $('#logoutButton').on('click', logout);
