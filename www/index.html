@@ -222,6 +222,18 @@ function renderPosts(posts) {
         return;
     }
 
+    const updates = {};
+    const newDisplayName = firebase.auth().currentUser.displayName;
+
+    console.log("aaaa2");
+    posts.forEach((post) => {//now
+        if(canEditPost(post)) {
+            console.log("ああ");
+            updates[`${post.id}/author`] = newDisplayName;
+            post.author = newDisplayName;
+        }
+    });
+
     posts.forEach((post) => {
         postsDiv.append(createPostElement(post));
     });
@@ -275,7 +287,7 @@ function closeModal(modalId) {
     $('body').removeClass('modal-open');
 }
 
-// 更新処理のハンドラ//now
+// 更新処理のハンドラ
 function handleUpdate() {
     if (!currentEditId) return;
     
@@ -298,6 +310,7 @@ function handleUpdate() {
             showMessage('更新に失敗しました：' + error.message, 'error');
         });
 }
+
 
 // 削除処理のハンドラ
 function handleDelete() {
@@ -339,6 +352,7 @@ function updateDisplayName() {
         .then(() => {
             showMessage('表示名を更新しました');
             $('#userEmail').text(newName);
+            loadPosts();
             closeModal('changeDispNameModal');
         })
         .catch((error) => {
@@ -383,7 +397,7 @@ function cancelEdit(postId) {
 }
 
 // 投稿の更新
-function updatePost(postId) {
+function updatePost(postId) {//now
     const contentVal = $(`#edit-${postId}`).val();
     if (!validateContent(contentVal)) return;
 
@@ -450,7 +464,7 @@ function register(email, password) {//now
         .then((userCredential) =>  {//参考:https://qiita.com/shiho97797/items/22cbda84274bfecde98f
             const user = userCredential.user;
             const s = email.split('@')[0].trim();
-            console.log(s);//参考:https://qiita.com/conkon326/items/ed14a69e860ab4d65d5c//const email = $('#loginEmail').val();
+            console.log(s);//参考:https://qiita.com/conkon326/items/ed14a69e860ab4d65d5c
             return user.updateProfile({
                 displayName: s,
             });
